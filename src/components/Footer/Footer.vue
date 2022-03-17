@@ -11,6 +11,7 @@
           </li>
         </ul>
         © 2022 得意猪 版权所有. 本站已在风雨中度过<span class="existTime"></span>
+        <p><a href="https://beian.miit.gov.cn" target="_blank">赣ICP备2022002274号-1</a></p>
       </div>
     </footer>
   </div>
