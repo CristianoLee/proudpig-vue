@@ -3,10 +3,12 @@
     <nav class="menu-mobile">
       <ul>
         <li>
-          <a target="_self"><i class="fa fa-home"></i>首页</a>
+          <!-- <a target="_self"><i class="fa fa-home"></i>首页</a> -->
+          <router-link to="/"><i class="fa fa-home"></i>首页</router-link>
         </li>
         <li>
-          <a href="#"><i class="fa fa-book"></i>档案馆</a>
+          <!-- <a href="#"><i class="fa fa-book"></i>档案馆</a> -->
+          <router-link to="/history"><i class="fa fa-book"></i>档案馆</router-link>
         </li>
         <li>
           <a href="#"><i class="fa fa-paw"></i>支持者</a>
@@ -27,10 +29,12 @@
           <nav class="menu-pc">
             <ul>
               <li>
-                <a target="_self"><i class="fa fa-home"></i>首页</a>
+                <!-- <a target="_self"><i class="fa fa-home"></i>首页</a> -->
+                <router-link to="/index"><i class="fa fa-home"></i>首页</router-link>
               </li>
               <li>
-                <a href="#"><i class="fa fa-book"></i>档案馆</a>
+                <!-- <a href="#"><i class="fa fa-book"></i>档案馆</a> -->
+                <router-link to="/history"><i class="fa fa-book"></i>档案馆</router-link>
               </li>
               <li>
                 <a href="#"><i class="fa fa-paw"></i>支持者</a>

@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="history"></div>
+    <div class="history">
+      <h1>历史</h1>
+    </div>
   </div>
 </template>
 

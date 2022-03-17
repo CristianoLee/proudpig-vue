@@ -5,9 +5,10 @@
         <div id="main">
           <!-- 内容区域 -->
           <article class="main-content md">
-            <section v-for="item in articleList" :key="item.id">
+            <!-- <section v-for="item in articleList" :key="item.id">
               <div>文章{{ item.id }}</div>
-            </section>
+            </section> -->
+            <router-view></router-view>
           </article>
           <!-- 目录区域 -->
           <aside class="main-list md">
@@ -36,19 +37,19 @@
 
 <script>
 export default {
-  data() {
-    return {
-      articleList: [
-        { id: 1, age: 20 },
-        { id: 2, age: 20 },
-        { id: 3, age: 20 },
-        { id: 4, age: 20 },
-        { id: 5, age: 20 },
-        { id: 6, age: 20 },
-        { id: 7, age: 20 }
-      ]
-    }
-  }
+  // data() {
+  //   return {
+  //     articleList: [
+  //       { id: 1, age: 20 },
+  //       { id: 2, age: 20 },
+  //       { id: 3, age: 20 },
+  //       { id: 4, age: 20 },
+  //       { id: 5, age: 20 },
+  //       { id: 6, age: 20 },
+  //       { id: 7, age: 20 }
+  //     ]
+  //   }
+  // }
 }
 </script>
 

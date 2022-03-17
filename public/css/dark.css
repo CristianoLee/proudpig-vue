@@ -10,8 +10,10 @@
   --scroll-thumb-bg: rgba(194, 194, 194);
   --scroll-thumb-hover-bg: #aaaf;
   --topnav-bg: rgba(40, 42, 44, 0.6);
+  --article-icon-hv: #6ec3f5;
+  --black-white: #000;
+  --article-bd: #d3d6da;
 }
-
 [color=dark] {
   --head-bg: url(../image/head-dark.png) no-repeat top/cover;
   --main-bgc: #181c27;
@@ -24,60 +26,60 @@
   --scroll-thumb-bg: #848589;
   --scroll-thumb-hover-bg: #a6a6a6;
   --topnav-bg: #181c27cc;
+  --article-icon-hv: #3e8dc5;
+  --black-white: #fff;
+  --article-bd: #ccc;
 }
-
 /*定义滚动条轨道 内阴影+圆角*/
 ::-webkit-scrollbar-track {
   background: var(--scroll-track-bg);
   border-radius: 4px;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
-
 /*定义滑块 内阴影+圆角*/
 ::-webkit-scrollbar-thumb {
   border-radius: 7px;
   background: var(--scroll-thumb-bg);
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scroll-thumb-hover-bg);
 }
-
 .head-bg {
   background: var(--head-bg);
 }
-
 body,
 html {
   background: var(--main-bgc) url(../image/timo.png) 0 0 / cover;
   background-attachment: fixed;
 }
-
 .md section {
   -webkit-transition: all 0.5s;
   transition: all 0.5s;
   background-color: var(--content-bgc);
 }
-
 .main-content section {
   color: var(--content-fc);
 }
-
 .main-content section:hover {
-  -webkit-transition: all 0.8s;
-  transition: all 0.8s;
+  -webkit-transition: 0.8s;
+  transition: 0.8s;
   box-shadow: 2px 6px 12px var(--md-bgc);
 }
-
 .main-list section {
   color: var(--list-fc);
 }
-
 #pc-topnav {
   background: var(--topnav-bg);
 }
-
+::selection {
+  color: var(--content-bgc);
+  background-color: var(--select-bgc);
+}
+.footer-container ::selection {
+  color: white;
+  background-color: transparent;
+}
 .introduce {
   position: relative;
   top: -45px;
@@ -85,14 +87,33 @@ html {
   text-align: center;
   padding: 10px;
 }
-
-/* 鼠标经过改变文字颜色 */
-::selection {
-  color: var(--content-bgc);
-  background-color: var(--select-bgc);
+.article-container .article-cover {
+  background: var(--main-bgc);
 }
-
-.footer-container ::selection {
-  color: white;
-  background-color: transparent;
+.article-container .article-introduce header {
+  color: var(--content-fc);
+}
+.article-container .article-introduce header .article-title {
+  color: var(--content-fc);
+}
+.article-container .article-introduce header .article-title:hover {
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  color: var(--article-icon-hv);
+}
+.article-container .article-footer {
+  border-top: 1px solid var(--article-bd);
+}
+.article-container .article-footer p a {
+  color: var(--black-white);
+}
+.article-container .article-footer p a:hover {
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  color: var(--article-icon-hv);
+}
+.article-container .article-footer p span:hover {
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  color: var(--article-icon-hv);
 }
