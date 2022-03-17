@@ -92,9 +92,6 @@ i {
 ::-webkit-scrollbar {
   width: 8px;
 }
-::selection {
-  background-color: rgba(255, 255, 255, 0.8);
-}
 @media (max-width: 1200px) {
   .container {
     width: 80%;

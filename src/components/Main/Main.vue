@@ -67,4 +67,8 @@ export default {
   margin: 0 auto;
   background: url(/image/smallPig.jpg) 0 0 / cover;
 }
+
+aside {
+  user-select: none;
+}
 </style>
