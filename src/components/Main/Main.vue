@@ -20,12 +20,28 @@
                   <div>这里是得意猪的博客</div>
                   <div>欢迎来到本蹄儿的世界</div>
                 </div>
+                <div class="list-meta">
+                  <div class="list-meta-content">
+                    <span class="list-meta-name">文章</span>
+                    <span class="list-meta-count">xx</span>
+                  </div>
+                  <div class="list-meta-content">
+                    <span class="list-meta-name">分类</span>
+                    <span class="list-meta-count">xx</span>
+                  </div>
+                  <div class="list-meta-content">
+                    <span class="list-meta-name">标签</span>
+                    <span class="list-meta-count">xx</span>
+                  </div>
+                </div>
               </section>
               <section>
-                <div>目录2</div>
+                <h4 class="Categories"><i class="fa fa-folder"></i> 分类目录</h4>
+                <div></div>
               </section>
               <section>
-                <div>目录3</div>
+                <h4 class="Categories"><i class="fa fa-tags"></i> 聚合标签</h4>
+                <div></div>
               </section>
             </div>
           </aside>
@@ -36,24 +52,10 @@
 </template>
 
 <script>
-export default {
-  // data() {
-  //   return {
-  //     articleList: [
-  //       { id: 1, age: 20 },
-  //       { id: 2, age: 20 },
-  //       { id: 3, age: 20 },
-  //       { id: 4, age: 20 },
-  //       { id: 5, age: 20 },
-  //       { id: 6, age: 20 },
-  //       { id: 7, age: 20 }
-  //     ]
-  //   }
-  // }
-}
+export default {}
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .asideBg {
   height: 120px;
   background: url(/image/asideBg.jpg);
@@ -67,6 +69,34 @@ export default {
   top: -45px;
   margin: 0 auto;
   background: url(/image/smallPig.jpg) 0 0 / cover;
+}
+
+.list-meta {
+  position: relative;
+  height: 80px;
+  bottom: 30px;
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-around;
+  .list-meta-content {
+    width: 68px;
+    height: 80px;
+    margin: 0 24px;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+    padding-top: 10px;
+    &:hover {
+      background-color: var(--meta-bg);
+    }
+    span {
+      color: var(--list-fc);
+      text-align: center;
+      display: block;
+    }
+  }
 }
 
 aside {

@@ -28,6 +28,14 @@ export default {
       )
     }
 
+    window.addEventListener('scroll', () => {
+      if (window.scrollY <= 339) {
+        // 向上滚动
+        $('.t1').removeClass('scrollDown').addClass('scrollUp')
+        $('.main-list-box').css({ top: '56px' })
+      }
+    })
+
     // PC端,仅处理鼠标滚动
     window.addEventListener('wheel', () => {
       this.scrollEvent()
