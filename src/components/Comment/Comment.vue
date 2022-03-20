@@ -34,10 +34,10 @@
         </div>
       </div>
     </div>
-    <div>
+    <footer class="comment-footer">
       <button class="loadMore" @click="getMoreComment" v-if="isMore">加载更多...</button>
       <span v-if="currentPage >= totalPage" class="notMore">没有更多评论了</span>
-    </div>
+    </footer>
   </div>
 </template>
 
@@ -252,9 +252,17 @@ export default {
     }
   }
 }
-.notMore {
-  color: #666;
+
+.comment-footer {
+  text-align: center;
+  margin: 0 auto;
+  .loadMore {
+  }
+  .notMore {
+    color: #666;
+  }
 }
+
 textarea::-webkit-input-placeholder {
   color: var(--list-fc);
 }
