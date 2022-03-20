@@ -11,9 +11,6 @@
   width: 1170px;
   padding: 0 15px;
 }
-.content {
-  background-color: var(--content-bgc);
-}
 .show {
   display: block;
 }

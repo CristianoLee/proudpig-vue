@@ -22,6 +22,7 @@
           <p class="comment-top">
             <span class="commentator">{{ item.commentator }}</span>
             <span class="comment-time">{{ item.time }}</span>
+            <span v-if="item.commentator === '得意猪'" class="author">作者</span>
           </p>
           <p class="comment-content">
             {{ item.content }}
@@ -85,7 +86,6 @@ export default {
     // 获取文章评论
     async getComment() {
       const { data: res1 } = await getCommentCount(this.articleId)
-      console.log(res1)
       this.commentCount = res1.data
       const { data: res2 } = await getComment(this.articleId, this.currentPage)
       this.commentList = res2.data
@@ -132,6 +132,8 @@ export default {
 
 <style lang="less">
 #comment-container {
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
   background-color: var(--comment-bg);
   margin-top: 20px;
   padding: 20px;
@@ -193,6 +195,9 @@ export default {
       font-size: 14px;
       margin-right: 0.2em;
       color: #666;
+      &:hover {
+        font-size: 20px;
+      }
     }
     .comment-info {
       margin-bottom: -50px;
@@ -217,8 +222,16 @@ export default {
           margin-right: 10px;
         }
         .commentator {
-          color: #27ae60;
+          color: var(--commentator-c);
         }
+        .author {
+          font-size: 13px;
+          font-weight: 500;
+          padding: 1px 3px;
+          color: #fff;
+          background-color: var(--author);
+        }
+
         .comment-time {
           margin-top: 0;
           color: #666;
@@ -257,6 +270,19 @@ export default {
   text-align: center;
   margin: 0 auto;
   .loadMore {
+    -webkit-transition: all 0.4s;
+    transition: all 0.4s;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #666;
+    color: #666;
+    border-radius: 0.5em;
+    font-weight: 600;
+    &:hover {
+      color: #78ce79;
+      border-color: #78ce79;
+    }
   }
   .notMore {
     color: #666;

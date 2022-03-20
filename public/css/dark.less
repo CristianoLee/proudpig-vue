@@ -18,6 +18,8 @@
   --meta-bg: #f3f3f3;
   --comment-bg: #fff;
   --textarea-bg: #f4f4f4;
+  --commentator-c: #666;
+  --author: #27ae60;
 }
 
 [color=dark] {
@@ -40,6 +42,8 @@
   --meta-bg: #364150;
   --comment-bg: rgba(33, 40, 51, 0.9);
   --textarea-bg: #364252;
+  --commentator-c: #ffffffb3;
+  --author: rgb(254, 44, 85);
 }
 
 .animate(@time) {
@@ -77,22 +81,27 @@ html {
 }
 
 .md section {
-  -webkit-transition: all 0.5s;
-  transition: all 0.5s;
+  .animate(0.5s);
   background-color: var(--content-bgc);
 }
 
+
+.main-list section {
+  color: var(--list-fc)
+}
+
 .main-content section {
+  .animate(0.4s);
   color: var(--content-fc);
+
+  article {
+    .animate(0.5s);
+  }
 
   &:hover {
     .animate(0.8s);
     box-shadow: 2px 6px 12px var(--md-bgc);
   }
-}
-
-.main-list section {
-  color: var(--list-fc)
 }
 
 #pc-topnav {
@@ -160,6 +169,14 @@ html {
       }
     }
   }
+}
+
+
+
+// 所有内容区域
+.content {
+  .animate(0.4s);
+  background-color: var(--content-bgc);
 }
 
 .content-bgc {
