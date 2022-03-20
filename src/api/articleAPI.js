@@ -20,19 +20,19 @@ export const addArticlePageviews = (data) => {
 }
 
 // 查询文章评论量
-export const getCommentCount = (id) => {
+export const getCommentCount = (articleId) => {
   return request.get('/api/comment/count', {
     params: {
-      id
+      articleId
     }
   })
 }
 
 // 查询文章评论
-export const getComment = (id, currentPage) => {
+export const getComment = (articleId, currentPage) => {
   return request.get('/api/comment', {
     params: {
-      id,
+      articleId,
       currentPage
     }
   })

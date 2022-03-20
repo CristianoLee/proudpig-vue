@@ -35,7 +35,7 @@
       </div>
     </div>
     <div>
-      <button class="loadMore" @click="getMoreComment" v-if="isMore">加载更多</button>
+      <button class="loadMore" @click="getMoreComment" v-if="isMore">加载更多...</button>
       <span v-if="currentPage >= totalPage" class="notMore">没有更多评论了</span>
     </div>
   </div>
@@ -85,6 +85,7 @@ export default {
     // 获取文章评论
     async getComment() {
       const { data: res1 } = await getCommentCount(this.articleId)
+      console.log(res1)
       this.commentCount = res1.data
       const { data: res2 } = await getComment(this.articleId, this.currentPage)
       this.commentList = res2.data
@@ -189,6 +190,7 @@ export default {
   .comment-area {
     margin-top: 30px;
     i {
+      font-size: 14px;
       margin-right: 0.2em;
       color: #666;
     }
@@ -220,12 +222,14 @@ export default {
         .comment-time {
           margin-top: 0;
           color: #666;
+          font-size: 12px;
         }
       }
       .comment-content {
         word-break: break-all;
         margin-bottom: 10px;
         color: var(--list-fc);
+        font-size: 14px;
       }
       .comment-bottom {
       }
@@ -233,6 +237,7 @@ export default {
         margin-top: 0;
         color: #666;
         cursor: pointer;
+        font-size: 12px;
         &:hover {
           color: #27ae60;
         }

@@ -102,6 +102,17 @@ i {
     width: 80%;
   }
 }
+@media (max-width: 1050px) {
+  .container {
+    width: 80%;
+  }
+  .main-content {
+    width: 100% !important;
+  }
+  .main-list {
+    display: none;
+  }
+}
 @media (max-width: 992px) {
   .container {
     width: 90%;
@@ -116,6 +127,12 @@ i {
 @media (max-width: 767px) {
   #mobile-topnav {
     display: block !important;
+  }
+  .comment-main {
+    width: 80% !important;
+  }
+  .readArticle {
+    position: relative !important;
   }
   body,
   html {

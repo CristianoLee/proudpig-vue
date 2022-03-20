@@ -76,7 +76,6 @@ export default {
       this.currentPage = currentPage
       const { data: res } = await getArticleInfo(this.currentPage)
       this.articleList = res.data
-      console.log(this.articleList)
     },
     // 添加文章访问量
     addPageviews(id) {

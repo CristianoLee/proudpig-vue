@@ -1,11 +1,19 @@
 <template>
-  <div class="buildBlog content">
-    <h1>测试2</h1>
+  <div>
+    <div class="buildBlog content">
+      <h1>测试2</h1>
+    </div>
+    <Comment :articleId="2"></Comment>
   </div>
 </template>
 
 <script>
-export default {}
+import Comment from '@/components/Comment/Comment'
+export default {
+  components: {
+    Comment
+  }
+}
 </script>
 
 <style lang="less">
