@@ -211,8 +211,17 @@ export default {
       }
     }
     .comment-main {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: var(--black-white);
+        transform: scaleY(0.1);
+      }
       width: 92%;
-      border-top: 1px dashed #000;
       position: relative;
       bottom: 40px;
       left: 50px;

@@ -20,6 +20,7 @@
   --textarea-bg: #f4f4f4;
   --commentator-c: #666;
   --author: #27ae60;
+  --font-hover: #ccc;
 }
 [color=dark] {
   --head-bg: url(../image/head-dark.png) no-repeat top/cover;
@@ -43,6 +44,7 @@
   --textarea-bg: #364252;
   --commentator-c: #ffffffb3;
   --author: #fe2c55;
+  --font-hover: #666;
 }
 /*定义滚动条轨道 内阴影+圆角*/
 ::-webkit-scrollbar-track {

@@ -6,7 +6,7 @@
         <ul class="social">
           <li>
             <a href="https://github.com/CristianoLee" target="_blank">
-              <span class="fa fa-github"></span>
+              <span class="github fa fa-github"></span>
             </a>
           </li>
         </ul>
@@ -41,4 +41,10 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="less">
+.github {
+  &:hover {
+    color: #6ec3f5;
+  }
+}
+</style>

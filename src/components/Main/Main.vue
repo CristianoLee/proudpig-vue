@@ -23,25 +23,36 @@
                 <div class="list-meta">
                   <div class="list-meta-content">
                     <span class="list-meta-name">文章</span>
-                    <span class="list-meta-count">xx</span>
+                    <span class="list-meta-count">{{ $store.getters.articleCount }}</span>
                   </div>
                   <div class="list-meta-content">
                     <span class="list-meta-name">分类</span>
-                    <span class="list-meta-count">xx</span>
+                    <span class="list-meta-count">3</span>
                   </div>
                   <div class="list-meta-content">
                     <span class="list-meta-name">标签</span>
-                    <span class="list-meta-count">xx</span>
+                    <span class="list-meta-count">3</span>
                   </div>
                 </div>
               </section>
               <section>
                 <h4 class="Categories"><i class="fa fa-folder"></i> 分类目录</h4>
-                <div></div>
+                <div class="Categories-list">
+                  <ul>
+                    <li><span>重大事件</span></li>
+                    <li><span>评论专栏</span></li>
+                    <li><span>测试</span></li>
+                  </ul>
+                </div>
               </section>
               <section>
                 <h4 class="Categories"><i class="fa fa-tags"></i> 聚合标签</h4>
-                <div></div>
+                <div class="tags-list">
+                  <span>js</span>
+                  <span>node</span>
+                  <span>mysql</span>
+                  <span>git</span>
+                </div>
               </section>
             </div>
           </aside>
@@ -52,7 +63,11 @@
 </template>
 
 <script>
-export default {}
+export default {
+  created() {
+    this.$store.dispatch('getArticleData')
+  }
+}
 </script>
 
 <style lang="less">
@@ -99,7 +114,69 @@ export default {}
   }
 }
 
+.Categories {
+  position: relative;
+  top: 20px;
+  margin: 0 auto;
+  width: 88%;
+  border-bottom: 1px solid #e7e7e7;
+  line-height: 2.4;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 35%;
+    height: 2px;
+    background-color: #51aded;
+  }
+}
+
+// 分类目录
+.Categories-list {
+  width: 85%;
+  margin: 0 auto;
+  margin-top: 30px;
+  li {
+    display: block;
+    line-height: 2;
+    padding: 0 5px;
+    &::before {
+      font-family: fontawesome;
+      content: '\f114';
+      font-size: 15px;
+      margin-right: 10px;
+    }
+    span {
+    }
+  }
+}
+
+// 聚合标签
+.tags-list {
+  margin-top: 15px;
+  padding: 20px 30px;
+  span {
+    cursor: pointer;
+    .animate(0.5s);
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 2px 12px;
+    margin-right: 15px;
+    border-radius: 5px;
+    &:hover {
+      color: var(--font-hover);
+      background-color: var(--list-fc);
+    }
+  }
+}
+
 aside {
   user-select: none;
+}
+
+.animate(@time) {
+  -webkit-transition: @time;
+  transition: @time;
 }
 </style>
