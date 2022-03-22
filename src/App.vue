@@ -28,6 +28,7 @@ export default {
       )
     }
 
+    // 重新加载页面
     window.onbeforeunload = function () {
       window.scrollTo(0, 0)
     }

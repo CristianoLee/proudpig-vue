@@ -10,7 +10,7 @@ import Test from '@/views/Content/Test'
 Vue.use(VueRouter)
 
 const router = new VueRouter({
-  mode: 'history', // 去除项目地址栏中的 # 号
+  // mode: 'history', // 去除项目地址栏中的 # 号
   // 路由规则
   routes: [
     { path: '/', redirect: 'index' },
