@@ -80,35 +80,40 @@ export default {
     })
   },
   methods: {
+    // 文章懒加载
+    load(data) {
+      const C = document.documentElement.clientHeight // 获取可视区域高度
+      const S = document.documentElement.scrollTop || document.body.scrollTop
+      for (let i = 0; i < data.length; i++) {
+        this.$nextTick(() => {
+          let box = $('.article' + i)[0]
+          // offsetTop是元素与offsetParent的距离，循环获取直到页面顶部
+          let O = box.offsetTop
+          while ((box = box.offsetParent)) {
+            O += box.offsetTop
+          }
+          if (C + S > O) {
+            $('.article' + i).attr('size', 'big')
+          }
+        })
+      }
+    },
     // 获取文章列表
     async getArticleList(currentPage) {
       this.currentPage = currentPage
       const { data: res } = await getArticleInfo(this.currentPage)
       this.articleList = res.data
-      // offsetTop是元素与offsetParent的距离，循环获取直到页面顶部
-      function getTop(e) {
-        var O = e.offsetTop
-        while ((e = e.offsetParent)) {
-          O += e.offsetTop
-        }
-        return O
-      }
-      this.$nextTick(() => {
-        load()
-      })
-      function load() {
-        const C = document.documentElement.clientHeight // 获取可视区域高度
-        const S = document.documentElement.scrollTop || document.body.scrollTop
-
-        for (let i = 0; i < res.data.length; i++) {
-          const box = $('.article' + i)[0]
-          if (C + S > getTop(box)) {
-            $(box).attr('size', 'big')
-          }
-        }
-      }
+      this.load(res.data)
+      let flag = false
       window.addEventListener('scroll', () => {
-        load()
+        if (flag) return
+        flag = true
+        setTimeout(async () => {
+          const { data: res } = await getArticleInfo(this.currentPage)
+          this.articleList = res.data
+          this.load(res.data)
+          flag = false
+        }, 100)
       })
     },
     // 添加文章访问量
@@ -161,14 +166,17 @@ export default {
 :root {
   --trans: scale(0.5);
   --op: 0;
+  --show: none;
 }
 
 [size='big'] {
   --trans: scale(1);
   --op: 1;
+  --show: block;
 }
 .article-container {
   .animate(0.8s);
+  // display: var(--show);
   opacity: var(--op);
   transform: var(--trans);
   height: 220px;
