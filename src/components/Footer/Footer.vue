@@ -43,6 +43,8 @@ export default {
 
 <style lang="less">
 .github {
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
   &:hover {
     color: #6ec3f5;
   }

@@ -25,7 +25,7 @@
             <span v-if="item.commentator === '得意猪'" class="author">作者</span>
           </p>
           <p class="comment-content">
-            {{ item.content }}
+<pre>{{ item.content }}</pre>
           </p>
           <p class="comment-bottom">
             <span class="comment-agree" @click="addAgree"
@@ -151,6 +151,8 @@ export default {
       display: none;
     }
     #comment-text {
+      -webkit-transition:all 0.3s;
+      transition:all 0.3s;
       width: 100%;
       height: 75%;
       border: none;
@@ -249,7 +251,8 @@ export default {
       }
       .comment-content {
         word-break: break-all;
-        margin-bottom: 10px;
+        margin-top: 5px;
+        margin-bottom: 5px;
         color: var(--list-fc);
         font-size: 14px;
       }
@@ -297,7 +300,6 @@ export default {
     color: #666;
   }
 }
-
 textarea::-webkit-input-placeholder {
   color: var(--list-fc);
 }

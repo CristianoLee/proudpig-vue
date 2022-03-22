@@ -1,13 +1,20 @@
 <template>
   <div>
-    <section v-for="item in articleList" :key="item.id" class="article-container">
-      <div class="article-box">
+    <!--  :class="'article-container article' + i" -->
+    <section
+      v-for="(item, i) in articleList"
+      :key="item.id"
+      :class="'article-container article' + i"
+    >
+      <div class="article-box" :v-show="isload">
         <div class="articleCover-box">
-          <router-link :to="{ path: item.url }">
-            <span @click="addPageviews(item.id)"
-              ><img :src="item.cover" alt="图片加载失败" class="article-cover" @click="toMain"
-            /></span>
-          </router-link>
+          <div>
+            <router-link :to="{ path: item.url }">
+              <span @click="addPageviews(item.id)"
+                ><img :src="item.cover" alt="图片加载失败" class="article-cover" @click="toMain"
+              /></span>
+            </router-link>
+          </div>
         </div>
         <div class="article-introduce">
           <header>
@@ -62,7 +69,8 @@ export default {
   data() {
     return {
       currentPage: 1,
-      articleList: []
+      articleList: [],
+      isload: true
     }
   },
   created() {
@@ -72,10 +80,36 @@ export default {
     })
   },
   methods: {
+    // 获取文章列表
     async getArticleList(currentPage) {
       this.currentPage = currentPage
       const { data: res } = await getArticleInfo(this.currentPage)
       this.articleList = res.data
+      // offsetTop是元素与offsetParent的距离，循环获取直到页面顶部
+      function getTop(e) {
+        var O = e.offsetTop
+        while ((e = e.offsetParent)) {
+          O += e.offsetTop
+        }
+        return O
+      }
+      this.$nextTick(() => {
+        load()
+      })
+      function load() {
+        const C = document.documentElement.clientHeight // 获取可视区域高度
+        const S = document.documentElement.scrollTop || document.body.scrollTop
+
+        for (let i = 0; i < res.data.length; i++) {
+          const box = $('.article' + i)[0]
+          if (C + S > getTop(box)) {
+            $(box).attr('size', 'big')
+          }
+        }
+      }
+      window.addEventListener('scroll', () => {
+        load()
+      })
     },
     // 添加文章访问量
     addPageviews(id) {
@@ -99,7 +133,7 @@ export default {
         alert('已经是第一页了哦！')
       } else {
         this.getArticleList(page)
-        this.toMain()
+        window.scrollTo(0, 480)
       }
     },
     // 定义跳转到主区域动画
@@ -108,7 +142,7 @@ export default {
       if (window.scrollY <= 480) {
         time = 600
       }
-      $('html, body').animate({ scrollTop: $('#main-container').offset().top - 41 }, time)
+      $('html, body').animate({ scrollTop: 439 }, time)
       setTimeout(() => {
         $('.t1').addClass('scrollUp')
         $('.backTop').addClass('backTopUp')
@@ -120,23 +154,51 @@ export default {
 </script>
 
 <style lang="less">
+.animate(@time) {
+  -webkit-transition: @time;
+  transition: @time;
+}
+:root {
+  --trans: scale(0.5);
+  --op: 0;
+}
+
+[size='big'] {
+  --trans: scale(1);
+  --op: 1;
+}
+.article-container {
+  .animate(0.8s);
+  opacity: var(--op);
+  transform: var(--trans);
+  height: 220px;
+}
 .article-box {
   width: 100%;
   height: 100%;
+  padding: 20px;
+  &:hover .article-cover {
+    transform: scale(1.5);
+  }
   .articleCover-box {
-    padding: 20px;
     display: inline-block;
     width: 35%;
     height: auto;
-    .article-cover {
-      padding: 2px;
+    div {
       border: 1px solid #f3f3f3;
+      overflow: hidden;
       width: 240px;
       height: 145px;
+      .article-cover {
+        background-color: transparent !important;
+        .animate(0.6s) !important;
+        width: 100%;
+        height: 100%;
+      }
     }
   }
   .article-introduce {
-    padding: 20px;
+    padding-left: 20px;
     display: inline-block;
     top: 20px;
     width: 65%;

@@ -50,7 +50,6 @@ i {
 }
 #main-container #main .main-content section {
   position: relative;
-  height: 219px;
   margin-bottom: 15px;
 }
 #main-container #main .main-list {
@@ -149,9 +148,6 @@ i {
   #pc-topnav,
   .head-bg {
     display: none;
-  }
-  .article-container {
-    height: auto !important;
   }
   .article-container .articleCover-box {
     width: 100% !important;

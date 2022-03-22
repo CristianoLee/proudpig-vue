@@ -78,8 +78,6 @@ html {
   color: var(--list-fc);
 }
 .main-content section {
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
   color: var(--content-fc);
 }
 .main-content section article {
