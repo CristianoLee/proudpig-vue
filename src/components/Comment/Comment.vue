@@ -37,7 +37,7 @@
     </div>
     <footer class="comment-footer">
       <button class="loadMore" @click="getMoreComment" v-if="isMore">加载更多...</button>
-      <span v-if="currentPage >= totalPage" class="notMore">没有更多评论了</span>
+      <span v-if="currentPage >= totalPage" class="notMore">评论到底啦~~~</span>
     </footer>
   </div>
 </template>

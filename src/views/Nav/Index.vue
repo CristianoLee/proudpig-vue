@@ -1,12 +1,11 @@
 <template>
   <div>
-    <!--  :class="'article-container article' + i" -->
     <section
       v-for="(item, i) in articleList"
       :key="item.id"
       :class="'article-container article' + i"
     >
-      <div class="article-box" :v-show="isload">
+      <div class="article-box">
         <div class="articleCover-box">
           <div>
             <router-link :to="{ path: item.url }">
@@ -69,8 +68,7 @@ export default {
   data() {
     return {
       currentPage: 1,
-      articleList: [],
-      isload: true
+      articleList: []
     }
   },
   created() {
@@ -78,15 +76,26 @@ export default {
     this.$nextTick(() => {
       $('#page1').addClass('currentPage').siblings('.page-box').removeClass('currentPage')
     })
+    let flag = false
+    window.addEventListener('scroll', () => {
+      if (flag) return
+      flag = true
+      setTimeout(async () => {
+        this.load(this.articleList)
+        flag = false
+      }, 100)
+    })
   },
   methods: {
     // 文章懒加载
     load(data) {
       const C = document.documentElement.clientHeight // 获取可视区域高度
       const S = document.documentElement.scrollTop || document.body.scrollTop
+
       for (let i = 0; i < data.length; i++) {
         this.$nextTick(() => {
           let box = $('.article' + i)[0]
+          if (box === undefined) return
           // offsetTop是元素与offsetParent的距离，循环获取直到页面顶部
           let O = box.offsetTop
           while ((box = box.offsetParent)) {
@@ -103,26 +112,13 @@ export default {
       this.currentPage = currentPage
       const { data: res } = await getArticleInfo(this.currentPage)
       this.articleList = res.data
-      this.load(res.data)
-      let flag = false
-      window.addEventListener('scroll', () => {
-        if (flag) return
-        flag = true
-        setTimeout(async () => {
-          const { data: res } = await getArticleInfo(this.currentPage)
-          this.articleList = res.data
-          this.load(res.data)
-          flag = false
-        }, 100)
-      })
+      this.load(this.articleList)
     },
     // 添加文章访问量
     addPageviews(id) {
       const params = new URLSearchParams()
       params.append('id', id)
       addArticlePageviews(params)
-      // 刷新文章数据
-      this.getArticleList()
     },
     // 翻页
     async changePage(page) {
@@ -164,19 +160,16 @@ export default {
   transition: @time;
 }
 :root {
-  --trans: scale(0.5);
+  --trans: scale(0.3);
   --op: 0;
-  --show: none;
 }
 
 [size='big'] {
   --trans: scale(1);
   --op: 1;
-  --show: block;
 }
 .article-container {
-  .animate(0.8s);
-  // display: var(--show);
+  .animate(0.8s) !important;
   opacity: var(--op);
   transform: var(--trans);
   height: 220px;
@@ -186,7 +179,7 @@ export default {
   height: 100%;
   padding: 20px;
   &:hover .article-cover {
-    transform: scale(1.5);
+    transform: scale(1.3);
   }
   .articleCover-box {
     display: inline-block;
@@ -199,7 +192,7 @@ export default {
       height: 145px;
       .article-cover {
         background-color: transparent !important;
-        .animate(0.6s) !important;
+        .animate(0.8s) !important;
         width: 100%;
         height: 100%;
       }
