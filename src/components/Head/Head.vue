@@ -15,7 +15,7 @@
           <a href="#"><i class="fa fa-trophy"></i>作品</a>
         </li>
         <li>
-          <a href="#"><i class="fa fa-paper-plane"></i>关于我</a>
+          <a href="#"><i class="fa fa-paper-plane"></i>联系作者</a>
         </li>
       </ul>
     </nav>
@@ -41,7 +41,7 @@
                 <a href="#"><i class="fa fa-trophy"></i>作品</a>
               </li>
               <li @click="toMain()">
-                <a href="#"><i class="fa fa-paper-plane"></i>关于我</a>
+                <a href="#"><i class="fa fa-paper-plane"></i>联系作者</a>
               </li>
             </ul>
           </nav>

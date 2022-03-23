@@ -13,7 +13,7 @@
   --article-icon-hv: #6ec3f5;
   --black-white: #000;
   --article-bd: #d3d6da;
-  --history-tag: #efefefaa;
+  --history-tag: #f3f3f3;
   --history-line-bg: #f1f1f1;
   --meta-bg: #f3f3f3;
   --comment-bg: #fff;
@@ -46,6 +46,13 @@
   --author: #fe2c55;
   --font-hover: #666;
 }
+.content {
+  -webkit-transition: 0.6s;
+  transition: 0.6s;
+  transition: background-color 0.8s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: var(--content-bgc);
+}
 /*定义滚动条轨道 内阴影+圆角*/
 ::-webkit-scrollbar-track {
   background: var(--scroll-track-bg);
@@ -72,6 +79,7 @@ html {
 .md section {
   -webkit-transition: 0.5s;
   transition: 0.5s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   background-color: var(--content-bgc);
 }
 .main-list section {
@@ -136,14 +144,6 @@ html {
   -webkit-transition: 0.4s;
   transition: 0.4s;
   color: var(--article-icon-hv);
-}
-.content {
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-  background-color: var(--content-bgc);
-}
-.content-bgc {
-  background-color: var(--content-bgc);
 }
 .history h2,
 .history h3 {

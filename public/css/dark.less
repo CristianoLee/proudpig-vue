@@ -13,7 +13,7 @@
   --article-icon-hv: #6ec3f5;
   --black-white: #000;
   --article-bd: #d3d6da;
-  --history-tag: #efefefaa;
+  --history-tag: #f3f3f3;
   --history-line-bg: rgb(241, 241, 241);
   --meta-bg: #f3f3f3;
   --comment-bg: #fff;
@@ -53,7 +53,13 @@
   transition: @time;
 }
 
-
+// 所有内容区域
+.content {
+  .animate(0.6s);
+  transition: background-color 0.8s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: var(--content-bgc);
+}
 
 /*定义滚动条轨道 内阴影+圆角*/
 ::-webkit-scrollbar-track {
@@ -85,6 +91,7 @@ html {
 
 .md section {
   .animate(0.5s);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   background-color: var(--content-bgc);
 }
 
@@ -174,15 +181,7 @@ html {
 
 
 
-// 所有内容区域
-.content {
-  .animate(0.4s);
-  background-color: var(--content-bgc);
-}
 
-.content-bgc {
-  background-color: var(--content-bgc);
-}
 
 .history {
 

@@ -31,7 +31,7 @@
                   </div>
                   <div class="list-meta-content">
                     <span class="list-meta-name">标签</span>
-                    <span class="list-meta-count">3</span>
+                    <span class="list-meta-count">4</span>
                   </div>
                 </div>
               </section>
@@ -105,6 +105,9 @@ export default {
     padding-top: 10px;
     &:hover {
       background-color: var(--meta-bg);
+    }
+    &:hover span {
+      color: #618eba;
     }
     span {
       color: var(--list-fc);

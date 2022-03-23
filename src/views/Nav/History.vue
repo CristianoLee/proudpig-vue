@@ -1,5 +1,5 @@
 <template>
-  <div class="history content-bgc">
+  <div class="history content">
     <h2 class="history-tag">文章档案</h2>
     <div class="history-container">
       <h3>当前共有 2 篇文章</h3>
@@ -14,7 +14,9 @@
           </p>
         </article>
         <article class="history-node">
-          <p><span class="history-pubtime">03-17</span><span class="historyTitle">测试</span></p>
+          <p>
+            <span class="history-pubtime">03-17</span><span class="historyTitle">来这里留言</span>
+          </p>
         </article>
       </div>
     </div>
@@ -70,7 +72,7 @@ export default {
       &::before {
         content: '';
         position: absolute;
-        left: -6px;
+        left: -7px;
         top: 40%;
         width: 10px;
         height: 10px;
@@ -82,7 +84,7 @@ export default {
       position: relative;
 
       p {
-        line-height: 2;
+        line-height: 3;
         margin-left: 20px;
         .history-pubtime {
           font-size: 12px;
@@ -90,16 +92,24 @@ export default {
           margin-right: 20px;
         }
         .historyTitle {
+          -webkit-transition: all 0.5s;
+          cursor: pointer;
+          transition: all 0.5s;
           color: var(--list-fc);
+          &:hover {
+            color: #6ec3f6;
+          }
         }
       }
       &::before {
+        box-sizing: border-box;
         content: '';
         position: absolute;
         left: -5px;
         top: 45%;
         width: 6px;
         height: 6px;
+        border: 1px solid #fff;
         border-radius: 50%;
         background-color: #bbbbbb;
       }
