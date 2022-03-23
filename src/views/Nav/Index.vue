@@ -51,7 +51,7 @@
         </p>
       </footer>
     </section>
-    <div class="page-container">
+    <div class="page-container unvisible">
       <div class="page-box" @click="changePage(currentPage - 1)" v-if="currentPage !== 1">&lt;</div>
       <div id="page1" class="page-box" @click="changePage((currentPage = 1))">1</div>
       <div id="page2" class="page-box" @click="changePage((currentPage = 2))">2</div>
@@ -73,9 +73,6 @@ export default {
   },
   created() {
     this.getArticleList(1)
-    this.$nextTick(() => {
-      $('#page1').addClass('currentPage').siblings('.page-box').removeClass('currentPage')
-    })
     let flag = false
     window.addEventListener('scroll', () => {
       if (flag) return
@@ -101,8 +98,19 @@ export default {
           while ((box = box.offsetParent)) {
             O += box.offsetTop
           }
+          // 当盒子处于可视距离则变大显示
           if (C + S > O) {
             $('.article' + i).attr('size', 'big')
+            // 当页面为第一页时，第一页按钮变色
+            if (this.currentPage === 1) {
+              $('#page1').addClass('currentPage').siblings('.page-box').removeClass('currentPage')
+            }
+            // 当显示到了最后一个盒子时才会显示分页按钮
+            if (i === data.length - 1) {
+              $('.page-container').removeClass('unvisible')
+            } else {
+              $('.page-container').addClass('unvisible')
+            }
           }
         })
       }
@@ -134,7 +142,7 @@ export default {
         alert('已经是第一页了哦！')
       } else {
         this.getArticleList(page)
-        window.scrollTo(0, 480)
+        window.scrollTo(0, $('#main-container').offset().top)
       }
     },
     // 定义跳转到主区域动画
@@ -162,17 +170,20 @@ export default {
 :root {
   --trans: scale(0.3);
   --op: 0;
+  --h: 220px;
 }
 
 [size='big'] {
   --trans: scale(1);
   --op: 1;
+  --h: auto !important;
 }
 .article-container {
   .animate(0.8s) !important;
   opacity: var(--op);
   transform: var(--trans);
-  height: 220px;
+  height: var(--h);
+  min-height: 220px;
 }
 .article-box {
   width: 100%;

@@ -28,11 +28,11 @@
             <ul>
               <li @click="toMain()">
                 <!-- <a target="_self"><i class="fa fa-home"></i>首页</a> -->
-                <router-link to="index"><i class="fa fa-home"></i>首页</router-link>
+                <router-link to="/"><i class="fa fa-home"></i>首页</router-link>
               </li>
               <li @click="toMain()">
                 <!-- <a href="#"><i class="fa fa-book"></i>档案馆</a> -->
-                <router-link to="history"><i class="fa fa-book"></i>档案馆</router-link>
+                <router-link to="/history"><i class="fa fa-book"></i>档案馆</router-link>
               </li>
               <li @click="toMain()">
                 <a href="#" @click="toMain()"><i class="fa fa-paw"></i>支持者</a>

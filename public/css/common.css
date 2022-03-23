@@ -11,6 +11,9 @@
   width: 1170px;
   padding: 0 15px;
 }
+.unvisible {
+  visibility: hidden;
+}
 .show {
   display: block;
 }
@@ -113,6 +116,9 @@ i {
   .container {
     width: 90%;
   }
+  .article-introduce {
+    padding-left: 5% !important;
+  }
   .main-content {
     width: 100% !important;
   }
@@ -129,6 +135,19 @@ i {
   }
   .readArticle {
     position: relative !important;
+  }
+  .article-box {
+    padding: 0 !important;
+  }
+  .article-box .articleCover-box div {
+    width: 100% !important;
+    height: auto !important;
+  }
+  .article-box .article-introduce {
+    padding: 20px !important;
+  }
+  .article-box .article-introduce .article-introduce-content {
+    height: auto !important;
   }
   body,
   html {
