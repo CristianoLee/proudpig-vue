@@ -29,7 +29,7 @@
 <pre>{{ item.content }}</pre>
           </p>
           <p class="comment-bottom">
-            <span class="comment-agree" @click="addAgree(item.id,item.commentor_id)"
+            <span class="comment-agree" @click="addAgree(item.id)"
               ><i class="fa fa-thumbs-o-up"></i>{{ item.agree }}</span
             >
              <span class="comment-replyIcon" @click="showReply(item.id,item.nikename)"> <i class="fa fa-comment-o" ></i>回复</span
@@ -60,7 +60,7 @@
 <pre>{{ responder.content }}</pre>
           </p>
           <p class="comment-bottom">
-            <span class="comment-agree" @click="addAgree(responder.id,responder.commentor_id)"
+            <span class="comment-agree" @click="addAgree(responder.id)"
               ><i class="fa fa-thumbs-o-up"></i>{{ responder.agree }}</span
             >
              <span class="comment-replyIcon"  @click="showReply(responder.id,responder.fromName)"> <i class="fa fa-comment-o"></i>回复</span
@@ -235,13 +235,13 @@ export default {
       alert(res.message)
     },
     // 点赞
-    async addAgree(id, commentorId) {
-      console.log(id, commentorId)
+    addAgree(id) {
       const params = new URLSearchParams()
-      params.append('id', id)
-      params.append('comment_id', commentorId)
-      const { data: res } = await addAgree(params)
-      console.log(res)
+      params.append('comment_id', id)
+      params.append('agree_id', this.user.username)
+      addAgree(params)
+      // 点赞完后刷新数据
+      this.getComment()
     }
   }
 }
