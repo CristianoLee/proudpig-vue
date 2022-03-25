@@ -23,7 +23,16 @@ export const addArticlePageviews = (data) => {
 export const getCommentCount = (articleId) => {
   return request.get('/api/comment/count', {
     params: {
-      articleId
+      article_id: articleId
+    }
+  })
+}
+
+// 查询评论楼层数量
+export const getCommentAreaCount = (articleId) => {
+  return request.get('/api/comment/areaCount', {
+    params: {
+      article_id: articleId
     }
   })
 }
@@ -32,7 +41,7 @@ export const getCommentCount = (articleId) => {
 export const getComment = (articleId, currentPage) => {
   return request.get('/api/comment', {
     params: {
-      articleId,
+      article_id: articleId,
       currentPage
     }
   })
@@ -41,4 +50,9 @@ export const getComment = (articleId, currentPage) => {
 // 添加文章评论
 export const addComment = (data) => {
   return request.post('/api/comment', data)
+}
+
+// 添加评论点赞
+export const addAgree = (data) => {
+  return request.post('/api/comment/agree', data)
 }
