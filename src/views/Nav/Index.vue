@@ -9,7 +9,7 @@
         <div class="articleCover-box">
           <div>
             <router-link :to="{ path: item.url }">
-              <span @click="addPageviews(item.id)"
+              <span @click="addPageviews(item)"
                 ><img :src="item.cover" alt="图片加载失败" class="article-cover" @click="toMain"
               /></span>
             </router-link>
@@ -20,7 +20,7 @@
             <a class="article-type">{{ item.type }}</a>
             <h2 @click="toMain">
               <router-link :to="{ path: item.url }" class="article-title"
-                ><span @click="addPageviews(item.id)">{{ item.title }}</span></router-link
+                ><span @click="addPageviews(item)">{{ item.title }}</span></router-link
               >
             </h2>
           </header>
@@ -43,7 +43,7 @@
             >条评论</span
           >
           <span class="readArticle" @click="toMain">
-            <span @click="addPageviews(item.id)"
+            <span @click="addPageviews(item)"
               ><router-link :to="{ path: item.url }"
                 >阅读全文<i class="fa fa-chevron-circle-right"></i></router-link
             ></span>
@@ -51,23 +51,32 @@
         </p>
       </footer>
     </section>
-    <div class="page-container unvisible">
+    <div class="page-container unvisible" v-if="totalPage > 1">
       <div class="page-box" @click="changePage(currentPage - 1)" v-if="currentPage !== 1">&lt;</div>
-      <div id="page1" class="page-box" @click="changePage((currentPage = 1))">1</div>
-      <div id="page2" class="page-box" @click="changePage((currentPage = 2))">2</div>
-      <div id="page3" class="page-box" @click="changePage((currentPage = 3))">3</div>
-      <div class="page-box" @click="changePage(currentPage + 1)" v-if="currentPage !== 3">&gt;</div>
+      <div
+        :class="'page-box page' + item"
+        v-for="item in totalPage"
+        :key="item"
+        @click="changePage((currentPage = item))"
+      >
+        {{ item }}
+      </div>
+      <div class="page-box" @click="changePage(currentPage + 1)" v-if="currentPage !== totalPage">
+        &gt;
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getArticleInfo, addArticlePageviews } from '@/api/articleAPI'
+import { getArticleCount, getArticleInfo, addArticlePageviews } from '@/api/articleAPI'
+import bus from '@/eventBus'
 import $ from 'jquery'
 export default {
   data() {
     return {
       currentPage: 1,
+      totalPage: 1,
       articleList: []
     }
   },
@@ -103,7 +112,7 @@ export default {
             $('.article' + i).attr('size', 'big')
             // 当页面为第一页时，第一页按钮变色
             if (this.currentPage === 1) {
-              $('#page1').addClass('currentPage').siblings('.page-box').removeClass('currentPage')
+              $('.page1').addClass('currentPage').siblings('.page-box').removeClass('currentPage')
             }
             // 当显示到了最后一个盒子时才会显示分页按钮
             if (i === data.length - 1) {
@@ -120,23 +129,28 @@ export default {
       this.currentPage = currentPage
       const { data: res } = await getArticleInfo(this.currentPage)
       this.articleList = res.data
+      const { data: res1 } = await getArticleCount()
+      this.totalPage = Math.ceil(res1.data / 10)
       this.load(this.articleList)
     },
-    // 添加文章访问量
-    addPageviews(id) {
+    // 添加文章访问量,并将数据传输给子组件
+    async addPageviews(item) {
       const params = new URLSearchParams()
-      params.append('id', id)
-      addArticlePageviews(params)
+      params.append('id', item.id)
+      const { data: res } = await addArticlePageviews(params)
+      if (res.status === 200) {
+        bus.$emit('articleInfo', item.id)
+      }
     },
     // 翻页
     async changePage(page) {
       this.$nextTick(() => {
-        $('#page' + page)
+        $('.page' + page)
           .addClass('currentPage')
           .siblings('.page-box')
           .removeClass('currentPage')
       })
-      if (page > 3) {
+      if (page > this.totalPage) {
         alert('已经是最后一页了哦！')
       } else if (page < 1) {
         alert('已经是第一页了哦！')

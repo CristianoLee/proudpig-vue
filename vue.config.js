@@ -3,5 +3,7 @@ module.exports = {
   publicPath: './',
   devServer: {
     port: 80
-  }
+  },
+  // 不导出源码，防止搞破坏
+  productionSourceMap: false
 }

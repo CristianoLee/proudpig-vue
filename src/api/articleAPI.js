@@ -1,5 +1,10 @@
 import request from '@/utils/request/request'
 
+// 创建匿名用户
+export const creatAnonymous = () => {
+  return request.post('/api/private')
+}
+
 // 查询文章数量
 export const getArticleCount = () => {
   return request.get('/api/article/count')
@@ -50,6 +55,25 @@ export const getComment = (articleId, currentPage) => {
 // 添加文章评论
 export const addComment = (data) => {
   return request.post('/api/comment', data)
+}
+
+// 查询/更新点赞数
+export const getAgree = (id) => {
+  return request.get('/api/comment/agree', {
+    params: {
+      id
+    }
+  })
+}
+
+// 查询/更新点赞数
+export const getAgreeStatus = (commentId, agreeId) => {
+  return request.get('/api/comment/agree/status', {
+    params: {
+      comment_id: commentId,
+      agree_id: agreeId
+    }
+  })
 }
 
 // 添加评论点赞

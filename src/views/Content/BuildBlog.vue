@@ -2,19 +2,15 @@
   <div>
     <div class="buildBlog content">
       <h1>测试1</h1>
+      <div>
+        <p>得意猪博客创立啦</p>
+      </div>
     </div>
-
-    <Comment :articleId="1"></Comment>
   </div>
 </template>
 
 <script>
-import Comment from '@/components/Comment/Comment'
-export default {
-  components: {
-    Comment
-  }
-}
+export default {}
 </script>
 
 <style lang="less">

@@ -13,7 +13,7 @@ import Main from '@/components/Main/Main'
 import Util from '@/components/Util/Util'
 import Footer from '@/components/Footer/Footer'
 import $ from 'jquery'
-
+import { creatAnonymous } from '@/api/articleAPI'
 export default {
   data() {
     return {
@@ -21,6 +21,7 @@ export default {
     }
   },
   created() {
+    this.creatAnonymous()
     window.onload = () => {
       console.log(
         '页面加载完毕！消耗了 %c' + Math.round(100 * performance.now()) / 100 + ' ms',
@@ -51,6 +52,17 @@ export default {
     })
   },
   methods: {
+    // 创建匿名用户
+    async creatAnonymous() {
+      const isExit = localStorage.getItem('anonymousId')
+      if (!isExit) {
+        const { data: res } = await creatAnonymous()
+        if (typeof res.data === 'string') {
+          // 将匿名用户ID存入local
+          localStorage.setItem('anonymousId', res.data)
+        }
+      }
+    },
     // 封装滚轮移动事件
     scrollEvent() {
       // 记录上一次滚动高度，用于判断滚动方向

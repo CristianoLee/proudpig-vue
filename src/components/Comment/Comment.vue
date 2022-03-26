@@ -8,7 +8,8 @@
 无需登录也没问题！"
       >
       </textarea>
-      <span class="remind">您还可以输入{{ textLength }}个字</span>
+      <span class="remind" v-if="textLength>0">您还可以输入{{ textLength }}个字</span>
+      <span class="remind red" v-else>字数已满！</span>
       <div class="submit-box">
         <button class="submit" @click="submitComment">提交</button>
       </div>
@@ -29,9 +30,10 @@
 <pre>{{ item.content }}</pre>
           </p>
           <p class="comment-bottom">
-            <span class="comment-agree" @click="addAgree(item.id)"
-              ><i class="fa fa-thumbs-o-up"></i>{{ item.agree }}</span
-            >
+           <span class="like" @click="addAgree(item.id,$event)">
+             <i class="fa fa-thumbs-o-up" ></i>
+             <span class="comment-agree" >{{ item.agree }}</span>
+           </span>
              <span class="comment-replyIcon" @click="showReply(item.id,item.nikename)"> <i class="fa fa-comment-o" ></i>回复</span
             >
           </p>
@@ -49,20 +51,28 @@
     </div>
           <!-- 回复区域 -->
           <div class="comment-info" v-for="responder in item.replys" :key="responder.id">
-          <img :src="responder.avtar" class="comment-avtar" />
+          <img :src="responder.avtar" class="comment-avtar  reply-img" />
         <div class="comment-reply">
-          <p class="comment-top">
-            <span class="commentator">{{ responder.fromName }}</span ><span v-if="responder.toName"><font class="reply-font">回复</font><span class="toName" >{{responder.toName}}</span></span>
+          <p class="comment-top reply-top">
+            <span class="commentator">{{ responder.fromName }}</span >
+             <span v-if="responder.fromName === '得意猪'" class="author">作者</span>
+            <span v-if="responder.toName && responder.toName!==item.nikename">
+              <font class="reply-font">回复@</font>
+              <span class="toName" >{{responder.toName}}</span>
+              <span v-if="responder.toName === '得意猪'" class="author">作者</span>
+            </span>
+
             <span class="comment-time">{{ responder.time }}</span>
-            <span v-if="responder.fromName === '得意猪'" class="author">作者</span>
+
           </p>
           <p class="comment-content">
 <pre>{{ responder.content }}</pre>
           </p>
           <p class="comment-bottom">
-            <span class="comment-agree" @click="addAgree(responder.id)"
-              ><i class="fa fa-thumbs-o-up"></i>{{ responder.agree }}</span
-            >
+            <span class="like" @click="addAgree(responder.id,$event)">
+              <i class="fa fa-thumbs-o-up" ></i>
+              <span class="comment-agree" >{{ responder.agree }}</span>
+            </span>
              <span class="comment-replyIcon"  @click="showReply(responder.id,responder.fromName)"> <i class="fa fa-comment-o"></i>回复</span
             >
           </p>
@@ -86,16 +96,18 @@
     </div>
     <!-- 评论底部 -->
     <footer class="comment-footer">
-      <button class="loadMore" @click="getMoreComment" v-if="isMore">加载更多...</button>
-      <span v-if="currentPage >= totalPage" class="notMore">评论到底啦~~~</span>
+      <button class="loadMore" @click="getMoreComment" v-if="currentPage <= totalPage && isMore">加载更多...</button>
+      <span v-else class="notMore">评论到底啦~~~</span>
     </footer>
   </div>
 </template>
 
 <script>
+// 导入依赖
 import $ from 'jquery'
-import { getCommentCount, getCommentAreaCount, getComment, addComment, addAgree } from '@/api/articleAPI'
+import { getCommentCount, getCommentAreaCount, getComment, addComment, getAgree, getAgreeStatus, addAgree } from '@/api/articleAPI'
 import { findUser } from '@/api/userAPI'
+
 export default {
   props: ['articleId'],
   data() {
@@ -162,10 +174,10 @@ export default {
       const { data: res1 } = await getCommentCount(this.articleId)
       this.commentCount = res1.data
       const { data: res2 } = await getCommentAreaCount(this.articleId)
-      this.areaCount = res2.data + 1
+      this.areaCount = res2.data
       const { data: res3 } = await getComment(this.articleId, this.currentPage)
       this.commentList = res3.data
-      this.totalPage = res1.data / 20
+      this.totalPage = Math.ceil(this.areaCount / 20)
       if (this.areaCount > 20) {
         this.isMore = true
       }
@@ -175,7 +187,7 @@ export default {
       params.append('username', this.user.username)
       const { data: user } = await findUser(params)
 
-      // 如果用户与评论者id相同，则用“你”来表示
+      // 如果用户与评论者或回复者id相同，则用“你”来表示
       this.$nextTick(() => {
         const fromNames = document.querySelectorAll('.commentator')
         const toNames = document.querySelectorAll('.toName')
@@ -195,11 +207,11 @@ export default {
     },
     // 加载更多评论
     async getMoreComment() {
-      if (this.currentPage >= this.totalPage - 1) {
+      this.currentPage++
+      if (this.currentPage === this.totalPage) {
         this.isMore = false
       }
 
-      this.currentPage++
       const { data: res } = await getComment(this.articleId, this.currentPage)
       this.commentList = [...this.commentList, ...res.data]
     },
@@ -223,25 +235,51 @@ export default {
       }
       const { data: res } = await addComment(params)
       if (res.status === 200) {
-        if (typeof res.data === 'string') {
-          localStorage.setItem('anonymousId', res.data)
-          location.reload()
-          window.scrollTo(0, $('#comment-container').offset().top - 41)
-        }
         this.getComment()
         $('#comment-text')[0].value = ''
+      } else {
+        alert('评论失败！请刷新页面重试')
       }
       this.getComment()
       alert(res.message)
     },
     // 点赞
-    addAgree(id) {
+    async addAgree(id, e) {
       const params = new URLSearchParams()
       params.append('comment_id', id)
       params.append('agree_id', this.user.username)
-      addAgree(params)
+      const { data: res } = await addAgree(params)
       // 点赞完后刷新数据
-      this.getComment()
+      if (res.status === 200) {
+        const { data: res1 } = await getAgree(id)
+        // 如果该用户已经给该条评论点过赞则变红
+        const { data: res2 } = await getAgreeStatus(id, this.user.username)
+        // 点赞数刷新
+        if (e.target.getAttribute('class') === 'fa fa-thumbs-o-up') {
+          $(e.target).siblings('span')[0].innerText = res1.data[0].agree
+          if (res2.data.length !== 0) {
+            $(e.target).parent().addClass('red')
+          } else {
+            $(e.target).parent().removeClass('red')
+          }
+        } else if (e.target.getAttribute('class') === 'comment-agree') {
+          $(e.target)[0].innerText = res1.data[0].agree
+          if (res2.data.length !== 0) {
+            $(e.target).parent().addClass('red')
+          } else {
+            $(e.target).parent().removeClass('red')
+          }
+        } else {
+          $(e.target).children('span')[0].innerText = res1.data[0].agree
+          if (res2.data.length !== 0) {
+            $(e.target).addClass('red')
+          } else {
+            $(e.target).removeClass('red')
+          }
+        }
+      } else {
+        alert('服务器异常，请刷新页面重试！')
+      }
     }
   }
 }
@@ -251,7 +289,10 @@ export default {
 .red{
   color: rgb(206, 54, 54) !important;
 }
-
+.animate(@time) {
+  -webkit-transition: @time;
+  transition: @time;
+}
 #comment-container {
   -webkit-transition: all 0.5s;
   transition: all 0.5s;
@@ -315,11 +356,7 @@ export default {
   // 评论区域
   .comment-area {
     margin-top: 30px;
-    i {
-      font-size: 14px;
-      margin-right: 0.4em;
-      color: #666;
-    }
+
     .fa-comment-o{
       position: relative;
       top: -1px;
@@ -356,6 +393,7 @@ export default {
           color: var(--commentator-c);
         }
         .author {
+          margin-left: 5px;
           font-size: 13px;
           font-weight: 500;
           padding: 1px 3px;
@@ -365,7 +403,7 @@ export default {
 
         .comment-time {
           vertical-align:2.5px;
-          margin-left: 15px;
+          margin-left: 10px;
           color: #666;
           font-size: 12px;
         }
@@ -379,18 +417,20 @@ export default {
       }
       .comment-bottom {
       }
-      .comment-agree,.comment-replyIcon {
+      .like,.comment-replyIcon {
         margin-top: 0;
         color: #666;
         cursor: pointer;
         font-size: 15px;
         margin-right: 40px;
+        .animate(0.5s);
+        i{
+          margin-right: 0.3em !important;
+          height: 20px !important;
+        }
         &:hover {
           color: #88afd6;
         }
-         &:hover i{
-        color: #88afd6;
-      }
         &:active {
           color: skyblue;
         }
@@ -410,6 +450,21 @@ export default {
       bottom: 40px;
       left: 50px;
       padding: 20px 0;
+      .reply-top{
+        font-size: 13px;
+        .comment-time{
+          vertical-align: 1px !important;
+        }
+      }
+}
+
+.reply-img{
+  top: 12px !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+.comment-reply{
+  left: 30px !important;
 }
 
 // 回复内容
@@ -430,15 +485,15 @@ export default {
 }
  .reply-font{
     color: var(--black-white);
-    margin: 0 10px;
+    margin-left: 10px;
   }
 
 .comment-footer {
   text-align: center;
   margin: 0 auto;
   .loadMore {
-    -webkit-transition: all 0.4s;
-    transition: all 0.4s;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
     background-color: transparent;
     cursor: pointer;
     padding: 5px 10px;
@@ -446,6 +501,7 @@ export default {
     color: #666;
     border-radius: 0.5em;
     font-weight: 600;
+    z-index: 999;
     &:hover {
       color: #78ce79;
       border-color: #78ce79;
