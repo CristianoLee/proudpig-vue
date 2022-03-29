@@ -11,6 +11,7 @@
 .container {
   margin: 0 auto;
   width: 1170px;
+  min-width: 20em;
   padding: 0 15px;
 }
 
@@ -45,12 +46,6 @@ i {
   margin-right: 0.5em;
 }
 
-.head-bg {
-  position: relative;
-  height: 480px;
-  z-index: 99;
-}
-
 .md {
   padding: 0 15px;
 }
@@ -64,8 +59,7 @@ i {
     margin: 0 -15px;
 
     .main-content {
-      float: left;
-      width: 66.66666667%;
+      width: 66.666666%;
 
       section {
         position: relative;
@@ -74,7 +68,7 @@ i {
     }
 
     .main-list {
-      width: 33.33333333%;
+      width: 33.333333%;
 
       .main-list-box {
         .animate(0.5s);
@@ -152,8 +146,6 @@ i {
     display: none;
   }
 
-
-
   .article-container {
 
     .articleCover-box {
@@ -224,6 +216,26 @@ i {
 
 @media (max-width: 767px) {
 
+  .reply-box {
+    height: 8.5em !important;
+  }
+
+  .submit-box {
+    height: 2.4em !important;
+  }
+
+  .submit {
+    width: 42px !important;
+    height: 24px !important;
+  }
+
+  #comment-text {
+    height: 10em !important;
+  }
+
+  #reply-text {
+    height: 5em !important;
+  }
 
   #mobile-topnav {
     display: block !important;

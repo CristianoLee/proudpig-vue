@@ -10,9 +10,18 @@ export const getArticleCount = () => {
   return request.get('/api/article/count')
 }
 
-// 查询文章
-export const getArticleInfo = (data) => {
-  return request.get('/api/article', {
+// 根据id查询文章
+export const getArticleInfo = (id) => {
+  return request.get('/api/articleInfo', {
+    params: {
+      id
+    }
+  })
+}
+
+// 查询文章集合
+export const getArticleList = (data) => {
+  return request.get('/api/articleList', {
     params: {
       currentPage: data
     }

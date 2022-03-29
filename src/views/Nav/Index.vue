@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { getArticleCount, getArticleInfo, addArticlePageviews } from '@/api/articleAPI'
+import { getArticleCount, getArticleList, addArticlePageviews } from '@/api/articleAPI'
 import bus from '@/eventBus'
 import $ from 'jquery'
 export default {
@@ -127,7 +127,7 @@ export default {
     // 获取文章列表
     async getArticleList(currentPage) {
       this.currentPage = currentPage
-      const { data: res } = await getArticleInfo(this.currentPage)
+      const { data: res } = await getArticleList(this.currentPage)
       this.articleList = res.data
       const { data: res1 } = await getArticleCount()
       this.totalPage = Math.ceil(res1.data / 10)
@@ -207,14 +207,17 @@ export default {
     transform: scale(1.3);
   }
   .articleCover-box {
-    display: inline-block;
-    width: 35%;
+    position: relative;
+    float: left;
+    overflow: hidden;
     height: auto;
+    width: 240px;
+    height: 145px;
     div {
-      border: 1px solid #f3f3f3;
-      overflow: hidden;
       width: 240px;
       height: 145px;
+      border: 1px solid #f3f3f3;
+      overflow: hidden;
       .article-cover {
         background-color: transparent !important;
         .animate(0.8s) !important;
@@ -225,9 +228,9 @@ export default {
   }
   .article-introduce {
     padding-left: 20px;
-    display: inline-block;
     top: 20px;
-    width: 65%;
+    overflow: hidden;
+    text-overflow: ellipsis;
     height: auto;
     header {
       position: relative;

@@ -5,9 +5,6 @@
         <div id="main">
           <!-- 内容区域 -->
           <article class="main-content md">
-            <!-- <section v-for="item in articleList" :key="item.id">
-              <div>文章{{ item.id }}</div>
-            </section> -->
             <router-view></router-view>
           </article>
           <!-- 目录区域 -->
@@ -63,14 +60,69 @@
 </template>
 
 <script>
+import $ from 'jquery'
 export default {
   created() {
     this.$store.dispatch('getArticleData')
+  },
+  mounted() {
+    $('.pigInfo').hover(
+      function () {
+        $('.pigIcon').removeClass('pigIcon').addClass('taiji')
+        $('.introduce').html('<div>道法无极，玄机百变</div>')
+      },
+      function () {
+        $('.taiji').removeClass('taiji').addClass('pigIcon')
+        $('.introduce').html('<div>这里是得意猪的博客</div><div>欢迎来到本蹄儿的世界</div>')
+      }
+    )
   }
 }
 </script>
 
 <style lang="less">
+.animate(@time) {
+  -webkit-transition: @time;
+  transition: @time;
+}
+
+.taiji {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  position: relative;
+  top: -60px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-left: 60px solid #000;
+  -webkit-animation: rotate 2s linear infinite;
+  animation: rotate 2s linear infinite;
+  &::before,
+  &::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-left: -30px;
+    box-sizing: border-box;
+    border: 20px solid #000;
+    background-color: #fff;
+  }
+  &::after {
+    border: 20px solid #fff;
+    background-color: #000;
+  }
+}
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .asideBg {
   height: 120px;
   background: url(/image/asideBg.jpg);
@@ -176,10 +228,5 @@ export default {
 
 aside {
   user-select: none;
-}
-
-.animate(@time) {
-  -webkit-transition: @time;
-  transition: @time;
 }
 </style>

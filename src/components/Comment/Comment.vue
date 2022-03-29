@@ -1,7 +1,8 @@
 <template>
-  <div id="comment-container">
+  <div id="comment-container" class="content">
     <div class="comment-box">
-      <textarea
+     <div class="comment-warp">
+        <textarea
         name=""
         id="comment-text"
         placeholder="说点儿什么～
@@ -10,19 +11,22 @@
       </textarea>
       <span class="remind" v-if="textLength>0">您还可以输入{{ textLength }}个字</span>
       <span class="remind red" v-else>字数已满！</span>
-      <div class="submit-box">
-        <button class="submit" @click="submitComment">提交</button>
-      </div>
+     </div>
+    <div class="submit-box">
+      <button class="submit" @click="submitComment">提交</button>
+    </div>
     </div>
       <!-- 评论区域 -->
     <div class="comment-area">
-      <h3>{{ commentCount }}条评论</h3>
+      <h3 v-if="commentCount>0">{{ commentCount }}条评论</h3>
+      <h3 v-else>暂无评论</h3>
       <!-- 评论楼层区域 -->
       <div class="comment-info" v-for="item in commentList" :key="item.id">
         <img :src="item.avtar" class="comment-avtar" />
         <div class="comment-main">
           <p class="comment-top">
             <span class="commentator">{{ item.nikename }}</span>
+            <span class="landlord">楼主</span>
             <span class="comment-time">{{ item.time }}</span>
             <span v-if="item.nikename === '得意猪'" class="author">作者</span>
           </p>
@@ -34,8 +38,9 @@
              <i class="fa fa-thumbs-o-up" ></i>
              <span class="comment-agree" >{{ item.agree }}</span>
            </span>
-             <span class="comment-replyIcon" @click="showReply(item.id,item.nikename)"> <i class="fa fa-comment-o" ></i>回复</span
-            >
+             <span class="comment-replyIcon" @click="showReply(item.id,item.nikename)">
+               <i class="fa fa-comment-o" ></i>回复
+            </span>
           </p>
           <!-- 回复楼层内容区域 -->
               <div class="comment-box reply-box" v-if="toId === item.id  && isReply">
@@ -56,25 +61,25 @@
           <p class="comment-top reply-top">
             <span class="commentator">{{ responder.fromName }}</span >
              <span v-if="responder.fromName === '得意猪'" class="author">作者</span>
-            <span v-if="responder.toName && responder.toName!==item.nikename">
+             <span v-if="responder.fromName === item.nikename" class="landlord">楼主</span>
+            <span v-if="responder.toName && responder.fromName!==item.nikename">
               <font class="reply-font">回复@</font>
               <span class="toName" >{{responder.toName}}</span>
               <span v-if="responder.toName === '得意猪'" class="author">作者</span>
+              <span v-if="responder.toName === item.nikename" class="landlord">楼主</span>
             </span>
-
-            <span class="comment-time">{{ responder.time }}</span>
-
           </p>
           <p class="comment-content">
 <pre>{{ responder.content }}</pre>
           </p>
           <p class="comment-bottom">
+            <span class="comment-time">{{ responder.time }}</span>
             <span class="like" @click="addAgree(responder.id,$event)">
               <i class="fa fa-thumbs-o-up" ></i>
               <span class="comment-agree" >{{ responder.agree }}</span>
             </span>
-             <span class="comment-replyIcon"  @click="showReply(responder.id,responder.fromName)"> <i class="fa fa-comment-o"></i>回复</span
-            >
+             <span class="comment-replyIcon" v-if="responder.commentor_id!==user.username" @click="showReply(responder.id,responder.fromName)">
+               <i class="fa fa-comment-o"></i>回复</span>
           </p>
           <!-- 回复内容区域 -->
          <div class="comment-box reply-box" v-if="toId === responder.id && isReply">
@@ -97,7 +102,7 @@
     <!-- 评论底部 -->
     <footer class="comment-footer">
       <button class="loadMore" @click="getMoreComment" v-if="currentPage <= totalPage && isMore">加载更多...</button>
-      <span v-else class="notMore">评论到底啦~~~</span>
+      <span v-if="commentCount>0&&currentPage >= totalPage" class="notMore">评论到底啦~~~</span>
     </footer>
   </div>
 </template>
@@ -105,7 +110,7 @@
 <script>
 // 导入依赖
 import $ from 'jquery'
-import { getCommentCount, getCommentAreaCount, getComment, addComment, getAgree, getAgreeStatus, addAgree } from '@/api/articleAPI'
+import { creatAnonymous, getCommentCount, getCommentAreaCount, getComment, addComment, getAgree, getAgreeStatus, addAgree } from '@/api/articleAPI'
 import { findUser } from '@/api/userAPI'
 
 export default {
@@ -127,17 +132,7 @@ export default {
   },
 
   created() {
-    // 获取本地存储的匿名ID
-    const anonymousId = localStorage.getItem('anonymousId')
-    // 如果用户未登录则使用匿名ID
-    if (!this.user.username) {
-      // 如果匿名ID不存在，则使用0传入后端自动生成一个匿名ID
-      if (anonymousId) {
-        this.user.username = anonymousId
-      } else {
-        this.user.username = '0'
-      }
-    }
+    this.createAnonymous()
     // 获取评论
     this.getComment()
 
@@ -169,6 +164,22 @@ export default {
       this.toId = id
       this.toName = name
     },
+    async createAnonymous() {
+      // 获取本地存储的匿名ID
+      const anonymousId = localStorage.getItem('anonymousId')
+      // 如果用户未登录则使用匿名ID
+      if (!this.user.username) {
+        this.user.username = anonymousId
+      }
+      // 如果没有匿名ID则重新刷新生成id
+      if (!anonymousId) {
+        const { data: res } = await creatAnonymous()
+        if (typeof res.data === 'string') {
+          // 将匿名用户ID存入local
+          localStorage.setItem('anonymousId', res.data)
+        }
+      }
+    },
     // 获取文章评论
     async getComment() {
       const { data: res1 } = await getCommentCount(this.articleId)
@@ -187,23 +198,27 @@ export default {
       params.append('username', this.user.username)
       const { data: user } = await findUser(params)
 
-      // 如果用户与评论者或回复者id相同，则用“你”来表示
-      this.$nextTick(() => {
-        const fromNames = document.querySelectorAll('.commentator')
-        const toNames = document.querySelectorAll('.toName')
-        for (let i = 0; i < toNames.length; i++) {
-          if (user.data[0].nikename === toNames[i].innerText) {
-            fromNames[i].innerText = '匿名'
-            $(fromNames[i]).addClass('red')
+      if (user.status === 200) {
+        // 如果用户与评论者或回复者id相同，则用“你”来表示
+        this.$nextTick(() => {
+          const fromNames = document.querySelectorAll('.commentator')
+          const toNames = document.querySelectorAll('.toName')
+          for (let i = 0; i < toNames.length; i++) {
+            if (user.data[0].nikename === toNames[i].innerText) {
+              toNames[i].innerText = '匿名'
+              $(toNames[i]).addClass('red')
+            }
           }
-        }
-        for (let i = 0; i < fromNames.length; i++) {
-          if (user.data[0].nikename === fromNames[i].innerText) {
-            fromNames[i].innerText = '匿名'
-            $(fromNames[i]).addClass('red')
+          for (let i = 0; i < fromNames.length; i++) {
+            if (user.data[0].nikename === fromNames[i].innerText) {
+              fromNames[i].innerText = '匿名'
+              $(fromNames[i]).addClass('red')
+            }
           }
-        }
-      })
+        })
+      } else {
+
+      }
     },
     // 加载更多评论
     async getMoreComment() {
@@ -216,35 +231,43 @@ export default {
       this.commentList = [...this.commentList, ...res.data]
     },
     // 发表评论/发送评论
-    async submitComment(area, toId) {
-      if ($('#comment-text').val().length > 300) return alert('评论字数不能超过300字')
+    async submitComment(area, toId, reply) {
       const params = new URLSearchParams()
       params.append('article_id', this.articleId)
       params.append('commentor_id', this.user.username)
       // 如果是回复
       if (toId) {
+        if ($('#reply-text').val().length > 300) return alert('回复字数不能超过300字')
+        if ($('#reply-text').val().trim().length < 1) return alert('回复内容不能为空！')
         params.append('area', area)
         params.append('to_id', toId)
         params.append('content', $('#reply-text').val())
         // 回复完后隐藏内容盒子
         this.isReply = false
       } else {
+        if ($('#comment-text').val().length > 300) return alert('评论字数不能超过300字')
+        if ($('#comment-text').val().trim().length < 1) return alert('评论内容不能为空！')
         params.append('area', this.areaCount)
         params.append('to_id', '')
         params.append('content', $('#comment-text').val())
       }
       const { data: res } = await addComment(params)
       if (res.status === 200) {
-        this.getComment()
         $('#comment-text')[0].value = ''
+        alert(res.message)
       } else {
-        alert('评论失败！请刷新页面重试')
+        const { data: res } = await creatAnonymous()
+        if (typeof res.data === 'string') {
+          // 将匿名用户ID存入local
+          localStorage.setItem('anonymousId', res.data)
+        }
+        alert('评论失败，请刷新重试！')
       }
       this.getComment()
-      alert(res.message)
     },
     // 点赞
     async addAgree(id, e) {
+      console.log(e)
       const params = new URLSearchParams()
       params.append('comment_id', id)
       params.append('agree_id', this.user.username)
@@ -257,6 +280,7 @@ export default {
         // 点赞数刷新
         if (e.target.getAttribute('class') === 'fa fa-thumbs-o-up') {
           $(e.target).siblings('span')[0].innerText = res1.data[0].agree
+          // 如果没查到说明没点过赞
           if (res2.data.length !== 0) {
             $(e.target).parent().addClass('red')
           } else {
@@ -289,6 +313,7 @@ export default {
 .red{
   color: rgb(206, 54, 54) !important;
 }
+
 .animate(@time) {
   -webkit-transition: @time;
   transition: @time;
@@ -297,26 +322,32 @@ export default {
   -webkit-transition: all 0.5s;
   transition: all 0.5s;
   background-color: var(--comment-bg);
-  margin-top: 20px;
+  margin-top: 50px;
   padding: 20px;
   .comment-box {
     position: relative;
-    height: 320px;
     border: 1px solid #ddd;
     border-radius: 0.75em;
     padding: 10px;
-    .remind {
-      position: absolute;
-      right: 20px;
-      bottom: 85px;
-      color: var(--black-white);
-      display: none;
+    padding-bottom: 0;
+    .comment-warp{
+      .remind {
+            position:relative;
+            float: right;
+            right: 1em;
+            bottom: 3em;
+            color: var(--black-white);
+            display: none;
+          }
     }
+
     #comment-text,#reply-text {
       -webkit-transition:all 0.3s;
       transition:all 0.3s;
       width: 100%;
-      height: 75%;
+      height: 16em;
+      min-height:10em;
+      max-height: 16em;
       border: none;
       outline: none;
       resize: none;
@@ -329,16 +360,21 @@ export default {
         background-color: var(--textarea-bg);
       }
     }
+    #reply-text{
+      height: 9em;
+      min-height:4em;
+    }
     .submit-box {
       position: relative;
-      margin-top: 20px;
-      height: 15%;
+      height: 3em;
+      max-height: 3em;
       border-top: 1px dashed #666;
     }
     .submit {
       display: inline-block;
       position: absolute;
-      top: 10px;
+      top: 50%;
+      transform: translateY(-50%);
       right: 5px;
       width: 56px;
       height: 32px;
@@ -389,6 +425,7 @@ export default {
       left: 50px;
       padding: 20px 0;
       .comment-top {
+
         .commentator,.toName {
           color: var(--commentator-c);
         }
@@ -400,9 +437,16 @@ export default {
           color: #fff;
           background-color: var(--author);
         }
-
+        .landlord{
+          margin-left: 5px;
+          font-size: 12px;
+          font-weight: 550;
+          padding: 1px 3px;
+          color: #000;
+          background-color: rgb(236, 165, 0)
+        }
         .comment-time {
-          vertical-align:2.5px;
+          vertical-align:2px;
           margin-left: 10px;
           color: #666;
           font-size: 12px;
@@ -415,26 +459,27 @@ export default {
         color: var(--list-fc);
         font-size: 14px;
       }
-      .comment-bottom {
+      .comment-bottom{
+        span {
+          margin-top: 0;
+          color: #666;
+          cursor: pointer;
+          font-size: 15px;
+          margin-right: 20px;
+          .animate(0.5s);
+          i{
+            margin-right: 0.3em !important;
+            height: 20px !important;
+          }
+          &:hover {
+            color: #88afd6;
+          }
+          &:active {
+            color: skyblue;
+          }
+              }
       }
-      .like,.comment-replyIcon {
-        margin-top: 0;
-        color: #666;
-        cursor: pointer;
-        font-size: 15px;
-        margin-right: 40px;
-        .animate(0.5s);
-        i{
-          margin-right: 0.3em !important;
-          height: 20px !important;
-        }
-        &:hover {
-          color: #88afd6;
-        }
-        &:active {
-          color: skyblue;
-        }
-      }
+
     }
     h3 {
       color: var(--list-fc);
@@ -470,16 +515,10 @@ export default {
 // 回复内容
 .reply-box{
   margin: 20px 0;
-  height: 200px !important;
-  textarea{
-    margin-bottom: 10px;
-  }
+  height: 13em;
   .submit-box{
    position: relative;
-   top: -28px;
-   .submit{
-   top: 5px !important;
-   }
+   height: 3em;
   }
 
 }

@@ -1,9 +1,13 @@
 <template>
-  <div>
-    <!-- 标题、作者 -->
-    <ArticleHead :articleId="id" v-if="id"></ArticleHead>
-    <!-- 路由占位符，文章内容 -->
-    <router-view></router-view>
+  <div id="article">
+    <div class="content">
+      <!-- 标题、作者 -->
+      <ArticleHead :articleId="id" v-if="id"></ArticleHead>
+      <div class="article-center">
+        <!-- 路由占位符，文章内容 -->
+        <router-view></router-view>
+      </div>
+    </div>
     <!-- 评论 -->
     <Comment :articleId="id" v-if="id"></Comment>
   </div>
@@ -42,4 +46,11 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="less">
+#article {
+  background-color: transparent;
+  .article-center {
+    padding: 0 20px;
+  }
+}
+</style>

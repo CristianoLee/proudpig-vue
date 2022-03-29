@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="buildBlog content">
-      <h1>测试2</h1>
+    <div class="test">
+      <div>暂无内容</div>
     </div>
   </div>
 </template>
@@ -11,7 +11,7 @@ export default {}
 </script>
 
 <style lang="less">
-.buildBlog {
+.test {
   height: 300px;
 }
 </style>

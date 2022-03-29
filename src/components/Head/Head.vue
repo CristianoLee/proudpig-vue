@@ -115,4 +115,10 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="less">
+.head-bg {
+  position: relative;
+  height: 480px;
+  z-index: 99;
+}
+</style>

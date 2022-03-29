@@ -1,7 +1,6 @@
 <template>
   <div>
-    <div class="buildBlog content">
-      <h1>测试1</h1>
+    <div class="buildBlog">
       <div>
         <p>得意猪博客创立啦</p>
       </div>
