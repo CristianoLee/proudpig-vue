@@ -75,7 +75,16 @@ export const getAgree = (id) => {
   })
 }
 
-// 查询/更新点赞数
+// 初始化点赞状态
+export const initAgreeStatus = (agreeId) => {
+  return request.get('/api/comment/agree/initStatus', {
+    params: {
+      agree_id: agreeId
+    }
+  })
+}
+
+// 查询/更新点赞状态
 export const getAgreeStatus = (commentId, agreeId) => {
   return request.get('/api/comment/agree/status', {
     params: {

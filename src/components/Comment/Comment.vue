@@ -21,26 +21,25 @@
       <h3 v-if="commentCount>0">{{ commentCount }}条评论</h3>
       <h3 v-else>暂无评论</h3>
       <!-- 评论楼层区域 -->
-      <div class="comment-info" v-for="item in commentList" :key="item.id">
+      <div class="comment-info" v-for="item in commentList" :key="item.id" :data-id="item.id">
         <img :src="item.avtar" class="comment-avtar" />
         <div class="comment-main">
           <p class="comment-top">
             <span class="commentator">{{ item.nikename }}</span>
-            <span class="landlord">楼主</span>
-            <span class="comment-time">{{ item.time }}</span>
             <span v-if="item.nikename === '得意猪'" class="author">作者</span>
           </p>
           <p class="comment-content">
 <pre>{{ item.content }}</pre>
           </p>
           <p class="comment-bottom">
-           <span class="like" @click="addAgree(item.id,$event)">
-             <i class="fa fa-thumbs-o-up" ></i>
-             <span class="comment-agree" >{{ item.agree }}</span>
-           </span>
+            <span class="comment-time">{{ item.time }}</span>
              <span class="comment-replyIcon" @click="showReply(item.id,item.nikename)">
                <i class="fa fa-comment-o" ></i>回复
             </span>
+           <span class="like" @click="addAgree(item.id)">
+             <i class="fa fa-thumbs-o-up" ></i>
+             <span class="comment-agree">{{ item.agree }}</span>
+           </span>
           </p>
           <!-- 回复楼层内容区域 -->
               <div class="comment-box reply-box" v-if="toId === item.id  && isReply">
@@ -51,18 +50,18 @@
       >
       </textarea>
       <div class="submit-box">
-        <button class="submit" @click="submitComment(item.area,item.commentor_id)">发送</button>
+        <button class="submit" @click="submitComment(item.area,item.commentor_id,0)">发送</button>
       </div>
     </div>
           <!-- 回复区域 -->
-          <div class="comment-info" v-for="responder in item.replys" :key="responder.id">
+          <div class="comment-info" v-for="responder in item.replys" :key="responder.id" :data-id="responder.id">
           <img :src="responder.avtar" class="comment-avtar  reply-img" />
         <div class="comment-reply">
           <p class="comment-top reply-top">
             <span class="commentator">{{ responder.fromName }}</span >
              <span v-if="responder.fromName === '得意猪'" class="author">作者</span>
-             <span v-if="responder.fromName === item.nikename" class="landlord">楼主</span>
-            <span v-if="responder.toName && responder.fromName!==item.nikename">
+             <span v-if="responder.fromName === item.nikename && responder.fromName!==user.nikename" class="landlord">楼主</span>
+            <span v-if="responder.toName && responder.type===1">
               <font class="reply-font">回复@</font>
               <span class="toName" >{{responder.toName}}</span>
               <span v-if="responder.toName === '得意猪'" class="author">作者</span>
@@ -74,12 +73,13 @@
           </p>
           <p class="comment-bottom">
             <span class="comment-time">{{ responder.time }}</span>
-            <span class="like" @click="addAgree(responder.id,$event)">
+             <span class="comment-replyIcon" v-if="responder.commentor_id!==user.username" @click="showReply(responder.id,responder.fromName)">
+               <i class="fa fa-comment-o"></i>回复
+               </span>
+            <span class="like" @click="addAgree(responder.id)">
               <i class="fa fa-thumbs-o-up" ></i>
               <span class="comment-agree" >{{ responder.agree }}</span>
             </span>
-             <span class="comment-replyIcon" v-if="responder.commentor_id!==user.username" @click="showReply(responder.id,responder.fromName)">
-               <i class="fa fa-comment-o"></i>回复</span>
           </p>
           <!-- 回复内容区域 -->
          <div class="comment-box reply-box" v-if="toId === responder.id && isReply">
@@ -90,7 +90,7 @@
       >
       </textarea>
       <div class="submit-box">
-        <button class="submit" @click="submitComment(responder.area,responder.commentor_id)">发送</button>
+        <button class="submit" @click="submitComment(responder.area,responder.commentor_id,1)">发送</button>
       </div>
           </div>
            </div>
@@ -110,7 +110,7 @@
 <script>
 // 导入依赖
 import $ from 'jquery'
-import { creatAnonymous, getCommentCount, getCommentAreaCount, getComment, addComment, getAgree, getAgreeStatus, addAgree } from '@/api/articleAPI'
+import { creatAnonymous, getCommentCount, getCommentAreaCount, getComment, addComment, getAgree, initAgreeStatus, getAgreeStatus, addAgree } from '@/api/articleAPI'
 import { findUser } from '@/api/userAPI'
 
 export default {
@@ -127,35 +127,45 @@ export default {
       isMore: false,
       isReply: false, // 是否显示回复内容盒子
       toName: '', // 发送回复人昵称
-      toId: '' // 发送回复人ID
+      toId: '', // 发送回复人ID
+      liked: [] // 用户点赞过的评论id集合
     }
   },
 
   created() {
+    // 如果用户未登录，创建匿名用户
     this.createAnonymous()
     // 获取评论
     this.getComment()
-
+    // 查询用户点赞过的评论id
+    this.initAgreeStatus()
+  },
+  mounted() {
     // 处理评论发布
-    this.$nextTick(() => {
-      $('#comment-text').focus(() => {
-        $('.remind').show()
-        $('#comment-text').bind('input propertychange', () => {
-          setTimeout(() => {
-            const text = $('#comment-text').val().length
-            if (text <= 300) {
-              this.textLength = 300 - text
-            } else {
-              this.textLength = 0
-            }
-          }, 500)
-        })
-      })
-      // 评论内容失去焦点则隐藏提示还剩多少字
-      $('#comment-text').blur(() => {
-        $('.remind').hide()
+    $('#comment-text').focus(() => {
+      $('.remind').show()
+      $('#comment-text').bind('input propertychange', () => {
+        setTimeout(() => {
+          const text = $('#comment-text').val().length
+          if (text <= 300) {
+            this.textLength = 300 - text
+          } else {
+            this.textLength = 0
+          }
+        }, 500)
       })
     })
+    // 评论内容失去焦点则隐藏提示还剩多少字
+    $('#comment-text').blur(() => {
+      $('.remind').hide()
+    })
+  },
+  updated() {
+    // 如果该用户已经给该条评论点过赞则变红
+    for (let i = 0; i < this.liked.length; i++) {
+      const id = this.liked[i].id
+      $('[data-id=' + id + ']').find('.like').eq(0).addClass('liked')
+    }
   },
   methods: {
     // 显示评论内容盒子
@@ -164,6 +174,12 @@ export default {
       this.toId = id
       this.toName = name
     },
+    // 查询用户点赞过的评论id
+    async initAgreeStatus() {
+      const { data: res } = await initAgreeStatus(this.user.username)
+      this.liked = res.data
+    },
+    // 创建匿名用户
     async createAnonymous() {
       // 获取本地存储的匿名ID
       const anonymousId = localStorage.getItem('anonymousId')
@@ -171,6 +187,7 @@ export default {
       if (!this.user.username) {
         this.user.username = anonymousId
       }
+
       // 如果没有匿名ID则重新刷新生成id
       if (!anonymousId) {
         const { data: res } = await creatAnonymous()
@@ -197,7 +214,7 @@ export default {
       const params = new URLSearchParams()
       params.append('username', this.user.username)
       const { data: user } = await findUser(params)
-
+      this.user = user.data[0]
       if (user.status === 200) {
         // 如果用户与评论者或回复者id相同，则用“你”来表示
         this.$nextTick(() => {
@@ -205,19 +222,17 @@ export default {
           const toNames = document.querySelectorAll('.toName')
           for (let i = 0; i < toNames.length; i++) {
             if (user.data[0].nikename === toNames[i].innerText) {
-              toNames[i].innerText = '匿名'
+              toNames[i].innerText = '匿名(你)'
               $(toNames[i]).addClass('red')
             }
           }
           for (let i = 0; i < fromNames.length; i++) {
             if (user.data[0].nikename === fromNames[i].innerText) {
-              fromNames[i].innerText = '匿名'
+              fromNames[i].innerText = '匿名(你)'
               $(fromNames[i]).addClass('red')
             }
           }
         })
-      } else {
-
       }
     },
     // 加载更多评论
@@ -231,8 +246,9 @@ export default {
       this.commentList = [...this.commentList, ...res.data]
     },
     // 发表评论/发送评论
-    async submitComment(area, toId, reply) {
+    async submitComment(area, toId, type) {
       const params = new URLSearchParams()
+
       params.append('article_id', this.articleId)
       params.append('commentor_id', this.user.username)
       // 如果是回复
@@ -251,6 +267,11 @@ export default {
         params.append('to_id', '')
         params.append('content', $('#comment-text').val())
       }
+      if (type) {
+        params.append('type', type)
+      } else {
+        params.append('type', 0)
+      }
       const { data: res } = await addComment(params)
       if (res.status === 200) {
         $('#comment-text')[0].value = ''
@@ -266,40 +287,22 @@ export default {
       this.getComment()
     },
     // 点赞
-    async addAgree(id, e) {
-      console.log(e)
+    async addAgree(id) {
       const params = new URLSearchParams()
       params.append('comment_id', id)
       params.append('agree_id', this.user.username)
       const { data: res } = await addAgree(params)
       // 点赞完后刷新数据
       if (res.status === 200) {
+        // 更新点赞数
         const { data: res1 } = await getAgree(id)
-        // 如果该用户已经给该条评论点过赞则变红
+        $('[data-id=' + id + ']').find('.comment-agree').eq(0)[0].innerText = res1.data[0].agree
+        // 更新点赞状态
         const { data: res2 } = await getAgreeStatus(id, this.user.username)
-        // 点赞数刷新
-        if (e.target.getAttribute('class') === 'fa fa-thumbs-o-up') {
-          $(e.target).siblings('span')[0].innerText = res1.data[0].agree
-          // 如果没查到说明没点过赞
-          if (res2.data.length !== 0) {
-            $(e.target).parent().addClass('red')
-          } else {
-            $(e.target).parent().removeClass('red')
-          }
-        } else if (e.target.getAttribute('class') === 'comment-agree') {
-          $(e.target)[0].innerText = res1.data[0].agree
-          if (res2.data.length !== 0) {
-            $(e.target).parent().addClass('red')
-          } else {
-            $(e.target).parent().removeClass('red')
-          }
+        if (res2.data.length !== 0) {
+          $('[data-id=' + id + ']').find('.like').eq(0).addClass('liked')
         } else {
-          $(e.target).children('span')[0].innerText = res1.data[0].agree
-          if (res2.data.length !== 0) {
-            $(e.target).addClass('red')
-          } else {
-            $(e.target).removeClass('red')
-          }
+          $('[data-id=' + id + ']').find('.like').eq(0).removeClass('liked')
         }
       } else {
         alert('服务器异常，请刷新页面重试！')
@@ -310,6 +313,12 @@ export default {
 </script>
 
 <style lang="less">
+// 点赞后
+.liked{
+  color: rgb(206, 54, 54) !important;
+}
+
+// 匿名颜色
 .red{
   color: rgb(206, 54, 54) !important;
 }
@@ -461,9 +470,9 @@ export default {
       }
       .comment-bottom{
         span {
+          box-sizing: border-box;
           margin-top: 0;
           color: #666;
-          cursor: pointer;
           font-size: 15px;
           margin-right: 20px;
           .animate(0.5s);
@@ -471,16 +480,23 @@ export default {
             margin-right: 0.3em !important;
             height: 20px !important;
           }
+        }
+        .like,.comment-replyIcon{
+          cursor: pointer;
+          .comment-agree{
+            margin-right: 0;
+          }
           &:hover {
             color: #88afd6;
           }
           &:active {
             color: skyblue;
           }
-              }
-      }
+        }
 
+      }
     }
+
     h3 {
       color: var(--list-fc);
       margin-bottom: 20px;
@@ -553,4 +569,5 @@ export default {
 textarea::-webkit-input-placeholder {
   color: var(--list-fc);
 }
+
 </style>
